@@ -3,7 +3,7 @@ name = "ip-final-project"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "-", email = "-"},
+    {name = "P-Manoj-Kumar", email = "95754537+P-Manoj-Kumar@users.noreply.github.com"},
 ]
 dependencies = [
     "numpy>=1.23.4",

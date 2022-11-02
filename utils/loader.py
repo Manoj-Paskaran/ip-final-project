@@ -4,19 +4,20 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 import country_converter as coco
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-# Loading MySQL Root Password
-load_dotenv()
+# # Loading MySQL Root Password
+# load_dotenv()
 
 PROJECT_ROOT = Path(__file__).parent
 
 DATA_FOLDER = PROJECT_ROOT.joinpath('data')
 
 def load_data_from_database() -> pd.DataFrame:
-
+    
     try:
+        print(st.secrets.root_password)
         connection = create_engine(
             f"mysql+pymysql://root:{st.secrets.root_password}@localhost:3306/data"
         ).connect()
