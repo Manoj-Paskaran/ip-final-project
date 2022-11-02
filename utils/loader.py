@@ -15,9 +15,10 @@ PROJECT_ROOT = Path(__file__).parent
 DATA_FOLDER = PROJECT_ROOT.joinpath('data')
 
 def load_data_from_database() -> pd.DataFrame:
+
     try:
         connection = create_engine(
-            f"mysql+pymysql://root:{os.environ.get('ROOT_PASSWORD')}@localhost:3306/data"
+            f"mysql+pymysql://root:{st.secrets.root_password}@localhost:3306/data"
         ).connect()
     
         df = pd.read_sql_table(table_name="salaries", con=connection, schema="data")
@@ -29,26 +30,26 @@ def load_data_from_database() -> pd.DataFrame:
 
 
 
-def load_df_to_mysql() -> None:
+# def load_df_to_mysql() -> None:
 
-    print("Load df to mysql is running...")
-    df = pd.read_csv(DATA_FOLDER.joinpath('salaries.csv'))
+#     print("Load df to mysql is running...")
+#     df = pd.read_csv(DATA_FOLDER.joinpath('salaries.csv'))
 
-    try:
-        connection = create_engine(
-            f"mysql+pymysql://root:{os.environ.get('ROOT_PASSWORD')}@localhost:3306/data"
-        ).connect()
+#     try:
+#         connection = create_engine(
+#             f"mysql+pymysql://root:{os.environ.get('ROOT_PASSWORD')}@localhost:3306/data"
+#         ).connect()
 
-        df.to_sql(
-            name='salaries',
-            con=connection,
-            schema='data',
-            if_exists='replace',
-            index=False
-        )
+#         df.to_sql(
+#             name='salaries',
+#             con=connection,
+#             schema='data',
+#             if_exists='replace',
+#             index=False
+#         )
 
-    finally:
-        connection.close()
+#     finally:
+#         connection.close()
 
 def load_data_from_csv() -> pd.DataFrame:
     df = pd.read_csv(DATA_FOLDER.joinpath('salaries.csv'))
