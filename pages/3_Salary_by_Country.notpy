@@ -1,0 +1,81 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import country_converter as coco
+
+from loader import load_data
+
+if "df" not in st.session_state:
+    st.session_state.df = load_data()
+
+def chloropleth_sal_country(
+    df: pd.DataFrame, work_years: list[int], experience_levels: list[str]
+):
+
+    sal_by_country = (
+        df.query("work_year in @work_years and experience_level in @experience_levels")
+        .groupby(['salary_in_usd', 'company_location'])
+        .size()
+        .reset_index()
+        .groupby('company_location')
+        .median()
+        .reset_index()
+    )
+
+    fig = px.choropleth(
+        locations=coco.convert(names=sal_by_country.company_location, to="ISO3"),
+        color=sal_by_country.salary_in_usd
+    )
+
+    return fig
+
+st.sidebar.write("Filter Years: ")
+
+work_years = []
+
+# if st.sidebar.checkbox(label="2020", value=True):
+#     work_years.append(2020)
+
+# if st.sidebar.checkbox(label="2021", value=True):
+#     work_years.append(2021)
+
+# if st.sidebar.checkbox(label="2022", value=True):
+#     work_years.append(2022)
+
+work_years.extend(
+    list(
+        range(
+            2020, (st.sidebar.slider(label="year", min_value=2020, max_value=2022) + 1)
+        )
+    )
+)
+
+st.sidebar.write("Filter Experience Levels: ")
+experience_levels = []
+
+if st.sidebar.checkbox(label="Junior", value=True):
+    experience_levels.append("Junior")
+
+if st.sidebar.checkbox(label="Intermediate", value=True):
+    experience_levels.append("Intermediate")
+
+if st.sidebar.checkbox(label="Expert", value=True):
+    experience_levels.append("Expert")
+
+if st.sidebar.checkbox(label="Director", value=True):
+    experience_levels.append("Director")
+
+
+fig = chloropleth_sal_country(
+    st.session_state.df, work_years=work_years, experience_levels=experience_levels
+)
+
+st.markdown(
+    f"""
+# Average Salary by Country
+#### years: [{', '.join(str(y) for y in work_years)}]
+#### and experience_levels: [{', '.join(experience_levels)}]
+"""
+)
+
+st.plotly_chart(fig)

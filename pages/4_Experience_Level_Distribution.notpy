@@ -1,0 +1,54 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.figure_factory as ff
+import country_converter as coco
+import matplotlib.pyplot as plt
+
+from loader import load_data
+
+if "df" not in st.session_state:
+    st.session_state.df = load_data()
+
+
+def bar_job_title(df: pd.DataFrame, work_years: list[int]):
+
+    if work_years == [None, None, None]:
+        return None, None, None
+
+    exp_lvl = (
+        df.query("work_year in @work_years")
+        .experience_level
+        .value_counts()
+    )
+    fig = px.pie(
+        names=exp_lvl.index,
+        values=exp_lvl.values,
+
+    )
+    fig.update_traces(
+        textinfo='label+percent+value',
+    )
+
+    return fig
+
+
+st.sidebar.write("""Filter Years:""")
+
+work_years = []
+
+if st.sidebar.checkbox(label="2020", value=True):
+    work_years.append(2020)
+
+if st.sidebar.checkbox(label="2021", value=True):
+    work_years.append(2021)
+
+if st.sidebar.checkbox(label="2022", value=True):
+    work_years.append(2022)
+
+
+
+st.markdown(
+"# Distribution of Experience Level"
+)
+
