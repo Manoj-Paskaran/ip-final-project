@@ -1,7 +1,4 @@
-# import pandas as pd
 import streamlit as st
-# import plotly.express as px
-# import country_converter as coco
 
 from utils.loader import load_data_from_database
 
@@ -76,3 +73,7 @@ unsafe_allow_html=True
 
 st.dataframe(st.session_state.df.sample(n=5, random_state=42))
 
+# import plotly.express as px
+# import country_converter as coco
+
+# import pandas as pd

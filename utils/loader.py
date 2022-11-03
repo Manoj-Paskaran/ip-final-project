@@ -1,23 +1,18 @@
-import os
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 import country_converter as coco
-# from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
-# # Loading MySQL Root Password
-# load_dotenv()
+# PROJECT_ROOT = Path(__file__).parent.parent
 
-PROJECT_ROOT = Path(__file__).parent
-
-DATA_FOLDER = PROJECT_ROOT.joinpath('data')
+# DATA_FOLDER = PROJECT_ROOT.joinpath('data')
+DATA_PATH = r"C:\dev\data-science\projects\ip-final-project\data\salaries.csv"
 
 def load_data_from_database() -> pd.DataFrame:
     
     try:
-        print(st.secrets.root_password)
         connection = create_engine(
             f"mysql+pymysql://root:{st.secrets.root_password}@localhost:3306/data"
         ).connect()
@@ -31,29 +26,9 @@ def load_data_from_database() -> pd.DataFrame:
 
 
 
-# def load_df_to_mysql() -> None:
-
-#     print("Load df to mysql is running...")
-#     df = pd.read_csv(DATA_FOLDER.joinpath('salaries.csv'))
-
-#     try:
-#         connection = create_engine(
-#             f"mysql+pymysql://root:{os.environ.get('ROOT_PASSWORD')}@localhost:3306/data"
-#         ).connect()
-
-#         df.to_sql(
-#             name='salaries',
-#             con=connection,
-#             schema='data',
-#             if_exists='replace',
-#             index=False
-#         )
-
-#     finally:
-#         connection.close()
 
 def load_data_from_csv() -> pd.DataFrame:
-    df = pd.read_csv(DATA_FOLDER.joinpath('salaries.csv'))
+    df = pd.read_csv(DATA_PATH)
     return clean_df(df)
 
 
@@ -134,13 +109,17 @@ load_data_from_csv = st.cache(load_data_from_csv)
 load_data_from_database = st.cache(load_data_from_database)
 
 
-if __name__ == '__main__':
-    df = load_data_from_csv()
-    print(df)
+# if __name__ == '__main__':
+#     df = load_data_from_csv()
+#     print(df)
 
-    df = load_data_from_database()
-    print(df)
+#     df = load_data_from_database()
+#     print(df)
 
+
+# from dotenv import load_dotenv
+# # Loading MySQL Root Password
+# load_dotenv()
 
 # from pathlib import Path
 
@@ -236,3 +215,25 @@ if __name__ == '__main__':
 #     df = load_data_uncached()
 #     print(df)
 #     # print(Path(__file__).parent.joinpath(r'data\salaries.csv'))
+
+
+# def load_df_to_mysql() -> None:
+
+#     print("Load df to mysql is running...")
+#     df = pd.read_csv(DATA_FOLDER.joinpath('salaries.csv'))
+
+#     try:
+#         connection = create_engine(
+#             f"mysql+pymysql://root:{os.environ.get('ROOT_PASSWORD')}@localhost:3306/data"
+#         ).connect()
+
+#         df.to_sql(
+#             name='salaries',
+#             con=connection,
+#             schema='data',
+#             if_exists='replace',
+#             index=False
+#         )
+
+#     finally:
+#         connection.close()

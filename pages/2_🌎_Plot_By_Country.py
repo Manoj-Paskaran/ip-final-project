@@ -3,10 +3,10 @@ import pandas as pd
 import plotly.express as px
 import country_converter as coco
 
-from utils.loader import load_data_from_database
+from utils.loader import load_data_from_database, load_data_from_csv
 
 if "df" not in st.session_state:
-    st.session_state.df = load_data_from_database()
+    st.session_state.df = load_data_from_csv()
 
 
 def chloropleth_empl_country(

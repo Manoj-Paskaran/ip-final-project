@@ -98,14 +98,6 @@ if st.sidebar.checkbox(label="2021", value=True):
 if st.sidebar.checkbox(label="2022", value=True):
     work_years.append(2022)
 
-# st.sidebar.write("Filter Experience Levels: ")
-# st.sidebar.checkbox(label="Junior")
-# st.sidebar.checkbox(label="Intermediate")
-# st.sidebar.checkbox(label="Expert")
-# st.sidebar.checkbox(label="Director")
-
-
-# st.sidebar.slider(label="year", min_value=2020, max_value=2022)
 
 no_1_jt, fig_jt = bar_job_title(df=st.session_state.df, work_years=work_years)
 no_1_ms, fig_ms = bar_sal_job_title(df=st.session_state.df, work_years=work_years)
@@ -115,7 +107,7 @@ tab1, tab2 = st.tabs(["No. of Employees", "Median Salary"])
 with tab1:
     st.markdown(
         f"""\
-    # No. of Employees *by* Job Title
+    # No. of Employees by Job Title
     ##### Years: [{', '.join(str(y) for y in work_years)}]
     ---\
     """
@@ -148,6 +140,29 @@ with tab2:
 
     if fig_ms is not None:
         st.plotly_chart(fig_ms)
+
+
+# work_years = []
+
+# work_years.extend(
+#     list(
+#         range(
+#             2020, (st.sidebar.slider(label="Year", min_value=2020, max_value=2022) + 1)
+#         )
+#     )
+# )
+
+
+
+# st.sidebar.write("Filter Experience Levels: ")
+# st.sidebar.checkbox(label="Junior")
+# st.sidebar.checkbox(label="Intermediate")
+# st.sidebar.checkbox(label="Expert")
+# st.sidebar.checkbox(label="Director")
+
+
+# st.sidebar.slider(label="year", min_value=2020, max_value=2022)
+
 
 # with right:
 # max_job_title = jt.sort_values(by='no_of_empls', ascending=False).iloc[0].job_title
