@@ -1,11 +1,11 @@
-import streamlit as st
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 
-from utils.loader import load_data_from_database
+from utils.loader import load_data
 
 if "df" not in st.session_state:
-    st.session_state.df = load_data_from_database()
+    st.session_state.df = st.cache(load_data)()
 
 
 def bar_job_title(df: pd.DataFrame, work_years: list[int]):
@@ -43,6 +43,7 @@ def bar_job_title(df: pd.DataFrame, work_years: list[int]):
 
     return no_1_jt, fig
 
+
 def bar_sal_job_title(df: pd.DataFrame, work_years: list[int]):
 
     if work_years == []:
@@ -50,36 +51,25 @@ def bar_sal_job_title(df: pd.DataFrame, work_years: list[int]):
 
     df_sub = df.query("work_year in @work_years")
 
-    ms =(
-        df_sub
-        .groupby(['job_title', 'experience_level'])
-        .salary_in_usd
-        .median()
+    ms = (
+        df_sub.groupby(["job_title", "experience_level"])
+        .salary_in_usd.median()
         .reset_index()
         .rename(columns={"salary_in_usd": "median_salary"})
     )
 
-    top_ms = ms.groupby('job_title').median_salary.sum().nlargest(15)
+    top_ms = ms.groupby("job_title").median_salary.sum().nlargest(15)
 
     no_1_ms = ms.query("job_title == @top_ms.head(1).index.values[0]")
 
-    ms10 = (
-        ms
-        .set_index('job_title')
-        .loc[top_ms.index.to_list()]
-        .reset_index()
-
-    )
+    ms10 = ms.set_index("job_title").loc[top_ms.index.to_list()].reset_index()
 
     fig = px.bar(
         ms10,
         x="job_title",
         y="median_salary",
         color="experience_level",
-        labels={
-            'median_salary': "Median Salary",
-            'job_title': 'Job Title'
-        }
+        labels={"median_salary": "Median Salary", "job_title": "Job Title"},
     )
 
     return no_1_ms, fig
@@ -113,8 +103,6 @@ with tab1:
     """
     )
 
-
-
     if no_1_jt is not None:
         left, right = st.columns(2)
         left.metric(label="Top Job Title", value=no_1_jt.job_title.iloc[0])
@@ -136,7 +124,10 @@ with tab2:
     if no_1_ms is not None:
         left, right = st.columns([2, 1])
         left.metric(label="Highest Paying Job Title", value=no_1_ms.job_title.iloc[0])
-        right.metric(label="Median Salary", value=f"{no_1_ms.median_salary.sum(): ,} USD", )
+        right.metric(
+            label="Median Salary",
+            value=f"{no_1_ms.median_salary.sum(): ,} USD",
+        )
 
     if fig_ms is not None:
         st.plotly_chart(fig_ms)
@@ -151,7 +142,6 @@ with tab2:
 #         )
 #     )
 # )
-
 
 
 # st.sidebar.write("Filter Experience Levels: ")

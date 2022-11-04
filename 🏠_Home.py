@@ -1,26 +1,27 @@
 import streamlit as st
 
-from utils.loader import load_data_from_database
-
+from utils.loader import load_data
 
 if "df" not in st.session_state:
-    st.session_state.df = load_data_from_database()
+    st.session_state.df = st.cache(load_data)()
 
 
-st.image('./images/cover.jpeg')
+st.image("./images/cover.jpeg")
 
 st.markdown(
-f"""
-<p align='center'>
+    f"""
+<h3 align="center">
+Informatics Practices Investigatory Project (2022-23)
+</h3>
+<h2 align="center">
+Web-based Interactive Dashboard for
+</h2>
 
-### Informatics Practices Investigatory Project (2022-23)
+<h1 align="center">
+Job Salaries in Data Science
+</h1>
+
 ---
-## Web-based Interactive Dashboard for
-# Global Salaries in AI/ML and Big Data
-
----
-</p>
-
 
 ### About the Dataset:
 
@@ -28,13 +29,10 @@ f"""
 
 **Shape**: `{st.session_state.df.shape[0]}` _rows_ x `{st.session_state.df.shape[1]}` _columns_
 
-**Columns**:
-""",
-unsafe_allow_html=True
-)
+---
 
+### Columns:  
 
-st.markdown("""
 1. **work_year**: The year the salary was paid. 
 1. **experience_level**: The experience level in the job during the year with the following possible values:  
     - Junior  
@@ -65,11 +63,9 @@ st.markdown("""
     - Small (less than 50 employees)
     - Medium (50 to 250 employees)
     - Large (more than 250 employees)
-
 """,
-unsafe_allow_html=True
-) 
-
+    unsafe_allow_html=True,
+)
 
 st.dataframe(st.session_state.df.sample(n=5, random_state=42))
 

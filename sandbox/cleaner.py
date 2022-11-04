@@ -1,6 +1,7 @@
 from pathlib import Path
-import pandas as pd
+
 import country_converter as coco
+import pandas as pd
 
 csv_path = r".\data\salaries.csv"
 

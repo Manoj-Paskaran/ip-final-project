@@ -1,34 +1,21 @@
-from pathlib import Path
-
+import country_converter as coco
 import pandas as pd
 import streamlit as st
-import country_converter as coco
 from sqlalchemy import create_engine
 
-# PROJECT_ROOT = Path(__file__).parent.parent
 
-# DATA_FOLDER = PROJECT_ROOT.joinpath('data')
-DATA_PATH = r"C:\dev\data-science\projects\ip-final-project\data\salaries.csv"
+def load_data() -> pd.DataFrame:
 
-def load_data_from_database() -> pd.DataFrame:
-    
     try:
         connection = create_engine(
             f"mysql+pymysql://root:{st.secrets.root_password}@localhost:3306/data"
         ).connect()
-    
+
         df = pd.read_sql_table(table_name="salaries", con=connection, schema="data")
 
     finally:
         connection.close()
 
-    return clean_df(df)
-
-
-
-
-def load_data_from_csv() -> pd.DataFrame:
-    df = pd.read_csv(DATA_PATH)
     return clean_df(df)
 
 
@@ -60,8 +47,7 @@ def clean_df(df: pd.DataFrame) -> pd.DataFrame:
     }
 
     df: pd.DataFrame = (
-        df
-        .astype(
+        df.astype(
             {
                 "work_year": "category",
                 "experience_level": pd.CategoricalDtype(
@@ -70,8 +56,12 @@ def clean_df(df: pd.DataFrame) -> pd.DataFrame:
                 "employment_type": pd.CategoricalDtype(
                     employment_type_map.keys(), ordered=True
                 ),
-                "company_size": pd.CategoricalDtype(company_size_map.keys(), ordered=True),
-                "remote_ratio": pd.CategoricalDtype(remote_ratio_map.keys(), ordered=True),
+                "company_size": pd.CategoricalDtype(
+                    company_size_map.keys(), ordered=True
+                ),
+                "remote_ratio": pd.CategoricalDtype(
+                    remote_ratio_map.keys(), ordered=True
+                ),
             }
         )
         .drop(columns=["salary", "salary_currency"])
@@ -95,18 +85,23 @@ def clean_df(df: pd.DataFrame) -> pd.DataFrame:
                 ),
             },
         )
-        .assign(
-            working_overseas=lambda x: x.employee_residence != x.company_location
-        )    
-
-    )    
+        .assign(working_overseas=lambda x: x.employee_residence != x.company_location)
+    )
     return df
 
-def load_data_uncached() -> pd.DataFrame:
-    return load_data_from_csv()
 
-load_data_from_csv = st.cache(load_data_from_csv)
-load_data_from_database = st.cache(load_data_from_database)
+def load_data_from_csv() -> pd.DataFrame:
+
+    csv_path = r"C:\dev\data-science\projects\ip-final-project\data\salaries.csv"
+    df = pd.read_csv(csv_path)
+    return clean_df(df)
+
+
+# def load_data_uncached() -> pd.DataFrame:
+#     return load_data_from_csv()
+
+# load_data_from_csv = st.cache(load_data_from_csv)
+# load_data_from_database = st.cache(load_data_from_database)
 
 
 # if __name__ == '__main__':

@@ -1,6 +1,6 @@
+import country_converter as coco
 import pandas as pd
 import plotly.express as px
-import country_converter as coco
 
 
 def bar_job_title(df, work_years: list[int]):

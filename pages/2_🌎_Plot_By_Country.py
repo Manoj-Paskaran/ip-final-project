@@ -1,12 +1,12 @@
-import streamlit as st
+import country_converter as coco
 import pandas as pd
 import plotly.express as px
-import country_converter as coco
+import streamlit as st
 
-from utils.loader import load_data_from_database, load_data_from_csv
+from utils.loader import load_data
 
 if "df" not in st.session_state:
-    st.session_state.df = load_data_from_csv()
+    st.session_state.df = st.cache(load_data)()
 
 
 def chloropleth_empl_country(
@@ -34,11 +34,6 @@ def chloropleth_empl_country(
 
     return fig
 
-        #         title=f"Distribution of Employees in years: \
-        # [{', '.join(str(y) for y in work_years)}] \
-        # and experience_levels: \
-        # [{', '.join(experience_levels)}]",
-        # animation_frame=df.work_year.unique(),
 
 def chloropleth_sal_country(
     df: pd.DataFrame, work_years: list[int], experience_levels: list[str]
@@ -46,17 +41,17 @@ def chloropleth_sal_country(
 
     sal_by_country = (
         df.query("work_year in @work_years and experience_level in @experience_levels")
-        .groupby(['salary_in_usd', 'company_location'])
+        .groupby(["salary_in_usd", "company_location"])
         .size()
         .reset_index()
-        .groupby('company_location')
+        .groupby("company_location")
         .median()
         .reset_index()
     )
 
     fig = px.choropleth(
         locations=coco.convert(names=sal_by_country.company_location, to="ISO3"),
-        color=sal_by_country.salary_in_usd
+        color=sal_by_country.salary_in_usd,
     )
 
     return fig
@@ -98,34 +93,38 @@ fig_2 = chloropleth_sal_country(
     st.session_state.df, work_years=work_years, experience_levels=experience_levels
 )
 
-tab1, tab2 = st.tabs(['No. of Employees', 'Median Salary'])
+tab1, tab2 = st.tabs(["No. of Employees", "Median Salary"])
 
 with tab1:
     st.markdown(
-f"""
+        f"""
 # No. of Employees by Country
 ---
 ##### Years: [{', '.join(str(y) for y in work_years)}]
 ##### Exp. Levels: [{', '.join(experience_levels)}]
 """
-)
+    )
 
     st.plotly_chart(fig)
 
 
 with tab2:
     st.markdown(
-f"""
+        f"""
 # Median Salary by Country
 ---
 ##### Years: [{', '.join(str(y) for y in work_years)}]
 ##### Exp. Levels: [{', '.join(experience_levels)}]
 """
-)
+    )
 
     st.plotly_chart(fig_2)
 
-
+    #         title=f"Distribution of Employees in years: \
+    # [{', '.join(str(y) for y in work_years)}] \
+    # and experience_levels: \
+    # [{', '.join(experience_levels)}]",
+    # animation_frame=df.work_year.unique(),
 
 
 # if st.sidebar.checkbox(label="2020", value=True):

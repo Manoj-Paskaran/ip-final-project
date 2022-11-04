@@ -1,12 +1,13 @@
-import streamlit as st
+import country_converter as coco
 import pandas as pd
 import plotly.express as px
-import country_converter as coco
+import streamlit as st
 
-from utils.loader import load_data_from_database, load_data_from_csv
+from utils.loader import load_data, load_data_from_csv
 
 if "df" not in st.session_state:
     st.session_state.df = load_data_from_csv()
+
 
 def chloropleth_empl_country(
     df: pd.DataFrame, work_years: list[int], experience_levels: list[str]
@@ -32,6 +33,7 @@ def chloropleth_empl_country(
     )
 
     return fig
+
 
 fig = chloropleth_empl_country()
 
